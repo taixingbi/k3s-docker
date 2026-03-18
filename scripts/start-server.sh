@@ -1,6 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Ensure Docker is available (Docker Desktop/OrbStack on Mac may not be in PATH)
+if ! command -v docker &>/dev/null; then
+  for dir in /usr/local/bin /Applications/Docker.app/Contents/Resources/bin /Applications/OrbStack.app/Contents/MacOS/xbin; do
+    if [[ -x "$dir/docker" ]]; then
+      export PATH="$dir:$PATH"
+      break
+    fi
+  done
+fi
+if ! command -v docker &>/dev/null; then
+  echo "Error: docker not found. Install Docker Desktop and ensure it is running."
+  echo "  https://docs.docker.com/desktop/install/mac-install/"
+  exit 1
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 OUTPUT_DIR="$PROJECT_DIR/output"
@@ -33,8 +48,9 @@ docker compose up -d
 
 echo ""
 echo "Waiting for k3s server to be ready..."
+sleep 5
 for i in {1..30}; do
-  if docker compose exec k3s-server test -f /var/lib/rancher/k3s/server/node-token 2>/dev/null; then
+  if docker compose exec -T k3s-server test -f /var/lib/rancher/k3s/server/node-token 2>/dev/null; then
     echo "k3s server is ready."
     break
   fi
