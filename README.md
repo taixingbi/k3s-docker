@@ -30,6 +30,7 @@ A hybrid k3s cluster with the control plane running in Docker on Mac Mini and an
 
 ```bash
 ./scripts/get-token.sh
+# K106daa391cff102c6220a41e795c0a745783a6a54d0ce6899e14fda6fd729d7938::server:78b9b97ebb8a3c9a9611706f3d5a7e60
 ```
 
 ### 3. Setup GPU Node (on gpu-node-1)
