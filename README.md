@@ -52,6 +52,8 @@ sudo /usr/local/bin/k3s-agent-uninstall.sh
 
 ### 5. Deploy NVIDIA Device Plugin (from Mac Mini)
 
+> **Note:** Steps 5–7 must run on the Mac Mini. The kubeconfig (`output/kubeconfig.yaml`) is created there when the k3s server starts and is not present on the GPU node.
+
 ```bash
 # Option A: Use the wrapper (always uses correct kubeconfig)
 ./scripts/kubectl.sh apply -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.13.0/nvidia-device-plugin.yml
@@ -103,6 +105,7 @@ spec:
 ## Troubleshooting
 
 - **kubectl: command not found**: Install with `brew install kubectl`
+- **kubeconfig not found** (on gpu-node-1): Run `kubectl` commands from the Mac Mini; the kubeconfig only exists where the k3s server runs. To use kubectl from the GPU node, copy `output/kubeconfig.yaml` from the Mac Mini.
 - **connection refused / wrong port**: Ensure you run from the project directory and use `export KUBECONFIG="$(pwd)/output/kubeconfig.yaml"` (the k3s API is on port 6443, not 26443)
 - **Agent cannot connect**: Verify Mac Mini IP is correct, port 6443 is open, and TLS SAN includes the IP (set via `NODE_EXTERNAL_IP` in start-server.sh)
 - **GPU not detected**: Run `./scripts/setup-gpu-node.sh` before joining; ensure NVIDIA driver is installed
